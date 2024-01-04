@@ -18,8 +18,21 @@ nicknames = []
 
 # Sending Messages To All Connected Clients
 def broadcast(message):
-    for client in clients:
-        client.send(message)
+    is_private = message.decode(encoding).find(': %')
+    if is_private != -1:
+        send_private(message)
+    else:
+        for client in clients:
+            client.send(message)
+
+# Sending Private Message to <%nickname> Client
+def send_private(message):
+    dec_message = message.decode(encoding)
+    private_nick = dec_message.find(': %')
+    receiver = dec_message[private_nick+3:dec_message.find(' ',private_nick+3)]
+    dec_message = 'private from ' + dec_message[:private_nick + 1] + dec_message[dec_message.find(' ',private_nick+3):]
+    client = clients[nicknames.index(receiver)]
+    client.send(dec_message.encode(encoding))
 
 # Handling Messages From Clients
 def handle(client):
