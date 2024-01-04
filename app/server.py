@@ -5,6 +5,7 @@ import threading
 # Connection Data
 host = '127.0.0.1'
 port = 55555
+encoding = 'utf-8'
 
 # Starting Server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,7 +34,7 @@ def handle(client):
             clients.remove(client)
             client.close()
             nickname = nicknames[index]
-            broadcast('{} left!'.format(nickname).encode('ascii'))
+            broadcast('{} left!'.format(nickname).encode(encoding))
             nicknames.remove(nickname)
             break
 
@@ -46,14 +47,14 @@ def receive():
 
         # Request And Store Nickname
         client.send('NICK'.encode('ascii'))
-        nickname = client.recv(1024).decode('ascii')
+        nickname = client.recv(1024).decode(encoding)
         nicknames.append(nickname)
         clients.append(client)
 
         # Print And Broadcast Nickname
         print("Nickname is {}".format(nickname))
-        broadcast("{} joined!".format(nickname).encode('ascii'))
-        client.send('Connected to server!'.encode('ascii'))
+        broadcast("{} joined!".format(nickname).encode(encoding))
+        client.send('Connected to server!'.encode(encoding))
 
         # Start Handling Thread For Client
         thread = threading.Thread(target=handle, args=(client,))
